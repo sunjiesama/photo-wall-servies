@@ -4,16 +4,17 @@ const express = require("express");
 const Mock = require("mockjs");
 const app = express();
 const MySQL = require("mysql");
+const dayjs = require('dayjs')
 //创建连接池
 const DB = MySQL.createConnection({
-  host: "124.223.184.103",
-  user: "root",
-  password: "Qwer@1234",
-  database: "MY_TEST",
+    host: "124.223.184.103",
+    user: "root",
+    password: "Qwer@1234",
+    database: "MY_TEST",
 });
 DB.connect((err) => {
-  if (err) throw err;
-  console.log("数据库连接成功");
+    if (err) throw err;
+    console.log("数据库连接成功");
 });
 /* 引入cors */
 const cors = require("cors");
@@ -24,109 +25,149 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.all("*", function (req, res, next) {
-  if (!req.get("Origin")) return next();
-  res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Methods", "GET");
-  res.set("Access-Control-Allow-Headers", "content-Type");
-  if ("OPTIONS" === req.method) return res.send(200);
-  next();
+    if (!req.get("Origin")) return next();
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Methods", "GET");
+    res.set("Access-Control-Allow-Headers", "content-Type");
+    if ("OPTIONS" === req.method) return res.send(200);
+    next();
 });
 /**
  * 注册
  */
 app.post("/user/registered", (req, res) => {
-  try {
-    const {username, password} = req.body;
-    const SQL_USER_ALREADY_EXISTS = `SELECT name FROM users WHERE name='${username}' LIMIT 1`;
-    DB.query(SQL_USER_ALREADY_EXISTS, (err, result) => {
-      console.log(result)
-      if (result.length > 0) {
-        res.json({
-          cone: "0",
-          message: "The user already exists",
-        });
-      } else {
-        const SQL_ADDUSER = `INSERT INTO users (name,password) VALUES ('${username}','${password}')`;
+    try {
+        const {username, password} = req.body;
+        const SQL_USER_ALREADY_EXISTS = `SELECT name FROM users WHERE name='${username}' LIMIT 1`;
+        DB.query(SQL_USER_ALREADY_EXISTS, (err, result) => {
+            console.log(result)
+            if (result.length > 0) {
+                res.json({
+                    cone: "0",
+                    message: "The user already exists",
+                });
+            } else {
+                const SQL_ADDUSER = `INSERT INTO users (name,password) VALUES ('${username}','${password}')`;
 
-        DB.query(SQL_ADDUSER, (err) => {
-          if (err) {
-            res.json({
-              code: err.code,
-              message: err.sqlMessage,
-            });
-          } else {
-            res.json({
-              code: "200",
-              message: "ok",
-            });
-          }
+                DB.query(SQL_ADDUSER, (err) => {
+                    if (err) {
+                        res.json({
+                            code: err.code,
+                            message: err.sqlMessage,
+                        });
+                    } else {
+                        res.json({
+                            code: "200",
+                            message: "ok",
+                        });
+                    }
+                });
+            }
         });
-      }
-    });
-  } catch (e) {
-    console.log("something is error", e);
-  }
+    } catch (e) {
+        console.log("something is error", e);
+    }
 });
 
 /**
  * 登录
  */
 app.post("/user/login", (req, res) => {
-  try {
-    const {username, password} = req.body;
-    const SQL_USER_INFO = `SELECT * FROM users WHERE name='${username}' AND password='${password}' LIMIT 1`;
-    DB.query(SQL_USER_INFO, (err, result) => {
-      if (err) {
-        res.json({
-          code: err.code,
-          message: err.sqlMessage,
+    try {
+        const {username, password} = req.body;
+        const SQL_USER_INFO = `SELECT * FROM users WHERE name='${username}' AND password='${password}' LIMIT 1`;
+        DB.query(SQL_USER_INFO, (err, result) => {
+            if (err) {
+                res.json({
+                    code: err.code,
+                    message: err.sqlMessage,
+                });
+            } else {
+                if (result.length > 0) {
+                    res.json({
+                        code: "200",
+                        message: "ok",
+                        context: result[0],
+                    });
+                } else {
+                    res.json({
+                        code: 1,
+                        message: "Credential error",
+                    });
+                }
+            }
         });
-      } else {
-        if (result.length > 0) {
-          res.json({
-            code: "200",
-            message: "ok",
-            context: result[0],
-          });
-        } else {
-          res.json({
-            code: 1,
-            message: "Credential error",
-          });
-        }
-      }
-    });
-  } catch (e) {
-    console.log("something is error", e);
-  }
+    } catch (e) {
+        console.log("something is error", e);
+    }
 });
 
 app.get("/user/userList", (req, res) => {
-  try {
-    const SQL_QUERY_USERS = "SELECT * FROM users";
-    DB.query(SQL_QUERY_USERS, (err, result) => {
-      if (err) {
-        console.log("error", err);
-        res.json({
-          code: err.code,
-          message: err.sqlMessage,
+    try {
+        const SQL_QUERY_USERS = "SELECT * FROM users";
+        DB.query(SQL_QUERY_USERS, (err, result) => {
+            if (err) {
+                console.log("error", err);
+                res.json({
+                    code: err.code,
+                    message: err.sqlMessage,
+                });
+            } else {
+
+                res.json(
+                    Mock.mock({
+                        code: "200",
+                        message: "ok",
+                        context: result,
+                    })
+                );
+            }
         });
-      } else {
-        res.json(
-            Mock.mock({
-              code: "200",
-              message: "ok",
-              context: result,
-            })
-        );
-      }
-    });
-  } catch (e) {
-    console.log("something is error", e);
-  }
+    } catch (e) {
+        console.log("something is error", e);
+    }
 });
 
+
+app.get('/photo/list', (req, res) => {
+    try {
+        const SQL_QUERY_PHOTO_LIST = "SELECT * FROM photos";
+        DB.query(SQL_QUERY_PHOTO_LIST, (err, result) => {
+            if (err) {
+                console.log("error", err);
+                res.json({
+                    code: err.code,
+                    message: err.sqlMessage,
+                });
+            } else {
+                const time = [...new Set(result.map((i) => dayjs(i.time).format("YYYY/MM/DD")))].map(i => {
+                    return {time: i, list: []}
+                });
+              
+                for (let i = 0; i < result.length; i++) {
+
+                    let index = time.findIndex((ele) => ele.time === dayjs(result[i].time).format("YYYY/MM/DD"))
+
+                    if (index !== -1) {
+                        time[index].list.push(result[i])
+                    }
+                }
+
+
+                res.json(
+                    Mock.mock({
+                        code: "200",
+                        message: "ok",
+                        context: time,
+                    })
+                );
+            }
+        })
+    } catch (e) {
+        console.log("something is error", e);
+    }
+})
 /* 监听端口 */
 app.listen(3000, () => {
-  console.log("listen:3000");
+    console.log("listen:3000");
 });
