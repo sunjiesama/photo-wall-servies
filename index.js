@@ -151,7 +151,6 @@ app.get("/user/userList", (req, res) => {
         const SQL_QUERY_USERS = "SELECT * FROM users";
         DB.query(SQL_QUERY_USERS, (err, result) => {
             if (err) {
-
                 res.json({
                     code: err.code,
                     message: err.sqlMessage,
@@ -216,7 +215,6 @@ app.get("/photo/albumList", (err, res) => {
         DB.query(SQL_QUERY_PHOTO_AlbumList, (err, result) => {
             if (err) {
             } else {
-
                 res.json({
                     code: "200",
                     message: "ok",
@@ -228,27 +226,25 @@ app.get("/photo/albumList", (err, res) => {
         console.log("something is error", e);
     }
 });
+
+app.post("/photo/addPhoto", multer({storage: storage}).single("uploadFile"), (req, res) => {
+        if (req.file.filename) {
+            const {photoalbumid} = req.body
+
+            const SQL_ADD_PHOTO = `INSERT INTO photos (time,url,photoalbumid) VALUES ('${dayjs().format(
+                "YYYY/MM/DD"
+            )}','${req.file.filename}','${photoalbumid}')`;
+            DB.query(SQL_ADD_PHOTO, (err, result) => {
+                res.json({
+                    code: "200",
+                    message: "ok",
+
+                });
+            });
+        }
+    }
+);
 /* 监听端口 */
 app.listen(3000, () => {
     console.log("listen:3000");
 });
-
-const arr = [
-    {time: "2022", value: "123"},
-    {time: "2022", value: "456"},
-    {time: "2022", value: "789"},
-
-    {time: "2023", value: "123"},
-    {time: "2023", value: "456"},
-];
-
-const arr1 = [
-    {
-        time: "2022",
-        list: [{value: "123"}, {value: "456"}, {value: "789"}],
-    },
-    {
-        time: "2023",
-        list: [{value: "123"}, {value: "456"}],
-    },
-];
