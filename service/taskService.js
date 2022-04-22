@@ -1,8 +1,6 @@
 const pool = require("../db");
 const dayjs = require("dayjs");
-const multer = require("multer");
 const {nanoid} = require("nanoid");
-
 
 /**
  * 相册列表
@@ -25,9 +23,7 @@ function albumList(req, res) {
     } catch (e) {
         console.log("something is error", e);
     }
-
 }
-
 
 /**
  * 新建相册
@@ -109,9 +105,9 @@ function photoList(req, res) {
 function addPhoto(req, res) {
     if (req.file.filename) {
         const {photoalbumid} = req.body;
-        
+
         //更新当前相册照片张数
-        const SQL_UPDATE_PHOTO_COUNT = `UPDATE photoAlbum SET count=count+1 WHERE photoalbumid = '${photoalbumid}'`
+        const SQL_UPDATE_PHOTO_COUNT = `UPDATE photoAlbum SET count=count+1 WHERE photoalbumid = '${photoalbumid}'`;
 
         const SQL_ADD_PHOTO = `INSERT INTO photos (time,url,photoalbumid) VALUES ('${dayjs().format(
             "YYYY/MM/DD"
@@ -121,7 +117,6 @@ function addPhoto(req, res) {
             if (err) throw err;
 
             connection.query(SQL_ADD_PHOTO, (error) => {
-
                 if (error) throw error;
 
                 connection.query(SQL_UPDATE_PHOTO_COUNT, (error) => {
@@ -132,13 +127,15 @@ function addPhoto(req, res) {
                         code: "200",
                         message: "ok",
                     });
-                })
-
+                });
             });
         });
     }
 }
 
 module.exports = {
-    albumList, addPhotoAlbum, photoList, addPhoto
-}
+    albumList,
+    addPhotoAlbum,
+    photoList,
+    addPhoto,
+};

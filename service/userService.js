@@ -1,5 +1,4 @@
-const pool = require("../db/index")
-
+const pool = require("../db/index");
 
 function registered(req, res) {
     let {username, password} = req.body;
@@ -8,10 +7,9 @@ function registered(req, res) {
         const SQL_ADDUSER = `INSERT INTO users (name,password) VALUES ('${username}','${password}')`;
 
         pool.getConnection((err, connection) => {
-            if (err) throw err
+            if (err) throw err;
 
             connection.query(SQL_USER_ALREADY_EXISTS, (error, result) => {
-
                 if (error) throw error;
                 if (result.length > 0) {
                     res.json({
@@ -35,11 +33,10 @@ function registered(req, res) {
                     });
                 }
             });
-        })
+        });
     } catch (e) {
         console.log("something is error", e);
     }
-
 }
 
 function login(req, res) {
@@ -66,5 +63,6 @@ function login(req, res) {
 }
 
 module.exports = {
-    registered, login
-}
+    registered,
+    login,
+};

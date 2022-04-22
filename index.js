@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require("express");
-const routers = require('./router/index')
+const routers = require("./router/index");
 
 // 创建express 服务器实例
 const app = express();
@@ -15,9 +15,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-
-app.use('/', routers)
-
+app.use("/", routers);
 
 /* 监听端口 */
 app.listen(3000, () => {

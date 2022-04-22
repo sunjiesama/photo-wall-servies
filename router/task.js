@@ -1,9 +1,8 @@
 const express = require("express");
-const router = express.Router()
+const router = express.Router();
 
-const service = require("../service/taskService")
+const service = require("../service/taskService");
 const multer = require("multer");
-
 
 const storage = multer.diskStorage({
     destination(req, file, cb) {
@@ -16,18 +15,23 @@ const storage = multer.diskStorage({
 });
 
 // 相册列表
-router.get("/albumList", service.albumList)
-
+router.get("/albumList", service.albumList);
 
 // 获取相册内照片列表
-router.post("/list", service.photoList)
-
+router.post("/list", service.photoList);
 
 // 新建相册
-router.post("/addPhotoAlbum", multer({storage: storage}).single("uploadFile"), service.addPhotoAlbum)
+router.post(
+    "/addPhotoAlbum",
+    multer({storage: storage}).single("uploadFile"),
+    service.addPhotoAlbum
+);
 
 // 相册内上传照片
-router.post("/addPhoto", multer({storage: storage}).single("uploadFile"), service.addPhoto)
+router.post(
+    "/addPhoto",
+    multer({storage: storage}).single("uploadFile"),
+    service.addPhoto
+);
 
-
-module.exports = router
+module.exports = router;

@@ -1,6 +1,5 @@
 const mysql = require("mysql");
 
-
 /**
  * 创建连接池
  */
@@ -12,4 +11,4 @@ const pool = mysql.createPool({
     database: "MY_TEST",
 });
 
-module.exports = pool
+module.exports = pool;
