@@ -4,11 +4,24 @@ const router = express.Router();
 const service = require("../service/taskService");
 const multer = require("multer");
 
+
 const storage = multer.diskStorage({
+    /**
+     * 图片存放地址
+     * @param req
+     * @param file
+     * @param cb
+     */
     destination(req, file, cb) {
         cb(null, "/data/www/images");
     },
 
+    /**
+     * 图片名称
+     * @param req
+     * @param file
+     * @param cb
+     */
     filename(req, file, cb) {
         cb(null, file.originalname);
     },
